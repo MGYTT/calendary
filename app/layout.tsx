@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from './components/ThemeProvider';
 import Script from 'next/script';
 
 // ==========================================================================
@@ -235,35 +234,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem
-          disableTransitionOnChange={false}
-          storageKey="advent-calendar-theme"
-        >
-          {/* Skip to main content (Accessibility) */}
-          <a
-            href="#main-content"
-            className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-6 focus:py-3 focus:bg-primary focus:text-white focus:rounded-lg focus:shadow-lg"
-          >
-            Przejdź do głównej treści
-          </a>
-
-          {/* Main Content */}
-          <main id="main-content" className="min-h-screen relative" role="main">
-            {children}
-          </main>
-
-          {/* Accessibility Announcement Region */}
-          <div
-            role="status"
-            aria-live="polite"
-            aria-atomic="true"
-            className="sr-only"
-            id="announcements"
-          />
-        </ThemeProvider>
 
         {/* Analytics (Optional - Google Analytics example) */}
         {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (
