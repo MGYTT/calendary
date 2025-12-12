@@ -118,7 +118,7 @@ export default function Home() {
   const [deferredPrompt, setDeferredPrompt] = useState<BeforeInstallPromptEvent | null>(null);
   const [redeemedDates, setRedeemedDates] = useState<Record<number, string>>({});
   const [isMounted, setIsMounted] = useState(false);
-  const installPromptTimeoutRef = useRef<NodeJS.Timeout>();
+  const installPromptTimeoutRef = useRef<number | null>(null);
 
   // ==========================================================================
   // Derived State (Memoized)
@@ -271,12 +271,13 @@ export default function Home() {
     window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
-      window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
-      window.removeEventListener('appinstalled', handleAppInstalled);
-      if (installPromptTimeoutRef.current) {
-        clearTimeout(installPromptTimeoutRef.current);
-      }
-    };
+  window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  window.removeEventListener('appinstalled', handleAppInstalled);
+  if (installPromptTimeoutRef.current !== null) {
+    clearTimeout(installPromptTimeoutRef.current);
+    installPromptTimeoutRef.current = null;
+  }
+};
   }, [isMounted]);
 
   // Keyboard shortcuts
