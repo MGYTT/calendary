@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Inter, Playfair_Display } from 'next/font/google';
 import './globals.css';
 import Script from 'next/script';
+import { ThemeProvider } from './components/ThemeProvider';
 
 // ==========================================================================
 // Font Configuration
@@ -198,35 +199,27 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html lang="pl" suppressHydrationWarning className="scroll-smooth">
       <head>
-        {/* Preconnect to external resources */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-
-        {/* DNS Prefetch for performance */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 
-        {/* Structured Data */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
 
-        {/* Microsoft Tile */}
         <meta name="msapplication-TileColor" content="#ec4899" />
         <meta name="msapplication-TileImage" content="/ms-icon-144x144.png" />
         <meta name="msapplication-config" content="/browserconfig.xml" />
 
-        {/* Additional PWA Meta Tags */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Advent Calendar" />
 
-        {/* Security Headers */}
         <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
         <meta httpEquiv="Content-Security-Policy" content="upgrade-insecure-requests" />
 
-        {/* Disable translation prompt */}
         <meta name="google" content="notranslate" />
       </head>
 
@@ -234,8 +227,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
         className={`${inter.variable} ${playfair.variable} font-sans antialiased`}
         suppressHydrationWarning
       >
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {/* ✅ TO BYŁO BRAKUJĄCE - renderuje page.tsx i inne strony */}
+          {children}
+        </ThemeProvider>
 
-        {/* Analytics (Optional - Google Analytics example) */}
+        {/* Analytics */}
         {process.env.NODE_ENV === 'production' && process.env.NEXT_PUBLIC_GA_ID && (
           <>
             <Script
@@ -256,53 +253,16 @@ export default function RootLayout({ children }: RootLayoutProps) {
           </>
         )}
 
-        {/* Service Worker Registration */}
-        <Script id="register-sw" strategy="afterInteractive">
-          {`
-            if ('serviceWorker' in navigator) {
-              window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js').then(
-                  function(registration) {
-                    console.log('ServiceWorker registration successful');
-                  },
-                  function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
-                  }
-                );
-              });
-            }
-          `}
-        </Script>
-
-        {/* Performance Monitoring */}
+        {/* Performance Monitoring - UPROSZCZONE (usunięto problematyczne PerformanceObserver) */}
         <Script id="web-vitals" strategy="afterInteractive">
           {`
-            if ('PerformanceObserver' in window) {
-              const lcpObserver = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                const lastEntry = entries[entries.length - 1];
-                console.log('LCP:', lastEntry.renderTime || lastEntry.loadTime);
-              });
-              lcpObserver.observe({ entryTypes: ['largest-contentful-paint'] });
-
-              const fidObserver = new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                entries.forEach((entry) => {
-                  console.log('FID:', entry.processingStart - entry.startTime);
-                });
-              });
-              fidObserver.observe({ entryTypes: ['first-input'] });
-
-              let clsValue = 0;
-              const clsObserver = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                  if (!entry.hadRecentInput) {
-                    clsValue += entry.value;
-                    console.log('CLS:', clsValue);
-                  }
+            if ('performance' in window && 'getEntriesByType' in performance) {
+              window.addEventListener('load', () => {
+                const perfData = performance.getEntriesByType('navigation')[0];
+                if (perfData) {
+                  console.log('Load time:', perfData.loadEventEnd - perfData.fetchStart, 'ms');
                 }
               });
-              clsObserver.observe({ entryTypes: ['layout-shift'] });
             }
           `}
         </Script>
