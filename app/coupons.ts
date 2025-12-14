@@ -40,7 +40,7 @@ export const coupons: Coupon[] = [
     id: 1,
     day: 1,
     title: 'Profesjonalny Masaż',
-    description: 'Pełny masaż ciała (oczywiście wykonany przezemnie) (15 min)',
+    description: 'Pełny masaż ciała (oczywiście wykonany przezemnie) (15 min1)',
     validUntil: '31.01.2026',
     emoji: '💆‍♀️',
     color: categoryColors[CouponCategory.RELAXATION],
